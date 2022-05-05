@@ -10,7 +10,7 @@ You can find the tool at <https://s3-eu-west-1.amazonaws.com/tzitzit.wellcomecol
 
 Within Prismic, the media editor only supports a single "Copyright" field:
 
-<img src="media-editor.png" alt="Screenshot of the Prismic media editor. The image is shown on the left, with three text boxes 'Alternative Text', 'Copyright' and 'Private Notes' on the right.">
+<img src="media-editor-with-arrow.png" alt="Screenshot of the Prismic media editor. The image is shown on the left, with three text boxes 'Alternative Text', 'Copyright' and 'Private Notes' on the right. A green arrow highlights the 'Copyright' field.">
 
 Because we want more than just copyright information, we store structured data in this field, in particular:
 
