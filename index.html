@@ -22,6 +22,11 @@
         background: rgba(0, 120, 104, 0.25);
         padding: 3px;
       }
+      #warning_content {
+        background: rgba(224, 27, 47, 0.25);
+        padding: 3px;
+        display: none;
+      }
       main {
         max-width: 750px;
         margin-left:  auto;
@@ -78,81 +83,50 @@
         &nbsp;
       </div>
 
+      <p id="warning_content">
+      </p>
+
       <script>
         const catalogueLicenses = {
           pdm: {
-            id: 'pdm',
             label: 'Public Domain Mark',
             url: 'https://creativecommons.org/share-your-work/public-domain/pdm/',
-            type: 'License',
           },
           'cc-0': {
-            id: 'cc-0',
             label: 'CC0 1.0 Universal',
             url: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode',
-            type: 'License',
           },
           'cc-by': {
-            id: 'cc-by',
             label: 'Attribution 4.0 International (CC BY 4.0)',
             url: 'https://creativecommons.org/licenses/by/4.0/',
-            type: 'License',
           },
           'cc-by-nc': {
-            id: 'cc-by-nc',
             label: 'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)',
             url: 'https://creativecommons.org/licenses/by-nc/4.0/',
-            type: 'License',
           },
           'cc-by-nc-nd': {
-            id: 'cc-by-nc',
             label:
               'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)',
             url: 'https://creativecommons.org/licenses/by-nc-nd/4.0/',
-            type: 'License',
           },
           'cc-by-nd': {
-            id: 'cc-by-nd',
             label: 'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)',
             url: 'https://creativecommons.org/licenses/by-nd/4.0/',
-            type: 'License',
           },
           'cc-by-sa': {
-            id: 'cc-by-sa',
             label: 'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)',
             url: 'https://creativecommons.org/licenses/by-sa/4.0/',
-            type: 'License',
           },
           'cc-by-nc-sa': {
-            id: 'cc-by-nc-sa',
             label:
               'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)',
             url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
-            type: 'License',
-          },
-          ogl: {
-            id: 'ogl',
-            label: 'Open Government Licence',
-            url: 'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/',
-            type: 'License',
-          },
-          opl: {
-            id: 'opl',
-            label: 'Open Parliament Licence',
-            url: 'https://www.parliament.uk/site-information/copyright-parliament/open-parliament-licence',
-            type: 'License',
-          },
-          inc: {
-            id: 'inc',
-            label: 'In copyright',
-            url: 'http://rightsstatements.org/vocab/InC/1.0/',
-            type: 'License',
           },
         };
 
         // This is an approximation of the TASL markup from the Tasl
         // component, to give an idea of how this will be rendered.
-        function renderPreview() {
+        function getPreviewText() {
           title = document.getElementsByName("title")[0].value;
           author = document.getElementsByName("author")[0].value;
           sourceName = document.getElementsByName("sourceName")[0].value;
@@ -189,7 +163,7 @@
             if (copyrightLink !== "") {
               copyrightHtml = `&copy; <a href="${copyrightLink}">${copyrightHolder}</a>. `;
             } else {
-              copyrightHtml = `&copy ${copyrightHolder}. `;
+              copyrightHtml = `&copy; ${copyrightHolder}. `;
             }
           }
 
@@ -204,7 +178,47 @@
             licenseHtml = "";
           }
 
-          document.getElementById("preview_content").innerHTML = `${titleHtml}${sourceHtml}${copyrightHtml}${licenseHtml}`;
+          return `${titleHtml}${sourceHtml}${copyrightHtml}${licenseHtml}`;
+        }
+
+        function renderPreview() {
+          document.getElementById("preview_content").innerHTML = getPreviewText();
+        }
+
+        function renderWarnings() {
+          licence = document.getElementsByName("licence")[0].value;
+          previewText = getPreviewText();
+
+          warnings = [];
+
+          // If there aren't exactly 7 parts, the TASL component in the
+          // front-end won't know what to do with them.
+          //
+          // Log a warning -- has somebody put in a pipe character?
+          const partsCount = previewText.split("|").length;
+          if (partsCount != 1) {
+            warnings.push("Does one of your values contain a pipe (|)? If so, please remove it &ndash; it breaks the front-end.")
+          }
+
+          // Specifying both a copyright holder and a CC license on
+          // Stories content is usually a mistake, so provide a warning here.
+          //
+          // We don't block it completely, in case there's a special case
+          // where it might actually be useful -- but we prompt the human
+          // to check.
+          //
+          // See https://wellcome.slack.com/archives/C3N7J05TK/p1652088436310899?thread_ts=1651593359.762529&cid=C3N7J05TK
+          if (previewText.includes("&copy;") && licence !== "") {
+            warnings.push("You have given both a licence and a copyright holder. This is usually an error, so please double-check this is correct.")
+          }
+
+          if (warnings.length === 0) {
+            document.getElementById("warning_content").innerHTML = "";
+            document.getElementById("warning_content").style.display = "none";
+          } else {
+            document.getElementById("warning_content").innerHTML = warnings.join("<br/><br/>");
+            document.getElementById("warning_content").style.display = "block";
+          }
         }
 
         var copy_bin = document.getElementById('copy_bin');
@@ -216,10 +230,12 @@
           el.addEventListener('change', function(event) {
             document.getElementById(event.currentTarget.name).innerHTML = event.currentTarget.value;
             renderPreview();
+            renderWarnings();
           })
           el.addEventListener('keyup', function(event) {
             document.getElementById(event.currentTarget.name).innerHTML = event.currentTarget.value;
             renderPreview();
+            renderWarnings();
           })
         })
         document.getElementById('copy').addEventListener('click', function() {
