@@ -28,7 +28,11 @@
         <label>Source link: <input name="sourceLink" type="text" /></label>
         <label>Licence:
         <select name="licence">
-          <option>CC-BY</option>
+          <!-- We allow an empty licence field for copyrighted items
+            See https://wellcome.slack.com/archives/C3N7J05TK/p1652082076791119?thread_ts=1651593359.762529&cid=C3N7J05TK
+            -->
+          <option></option>
+          <option selected>CC-BY</option>
           <option>CC-BY-NC</option>
           <option>CC-BY-NC-ND</option>
           <option>CC-0</option>
