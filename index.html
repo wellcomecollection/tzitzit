@@ -22,208 +22,216 @@
         background: rgba(0, 120, 104, 0.25);
         padding: 3px;
       }
+      main {
+        max-width: 750px;
+        margin-left:  auto;
+        margin-right: auto;
+        padding: 1em;
+      }
     </style>
   </head>
   <body>
-    <form name="tasl" style="margin-bottom: 2em">
-        <label>Title: <input name="title" type="text" /></label>
-        <label>Author: <input name="author" type="text" /></label>
-        <label>Source name: <input name="sourceName" type="text" /></label>
-        <label>Source link: <input name="sourceLink" type="text" /></label>
-        <label>Licence:
-        <select name="licence">
-          <!-- We allow an empty licence field for copyrighted items
-            See https://wellcome.slack.com/archives/C3N7J05TK/p1652082076791119?thread_ts=1651593359.762529&cid=C3N7J05TK
-            -->
-          <option></option>
-          <option selected>CC-BY</option>
-          <option>CC-BY-NC</option>
-          <option>CC-BY-NC-ND</option>
-          <option>CC-0</option>
-          <option>PDM</option>
-        </select>
-        </label>
-        <label>Copyright holder: <input name="copyrightHolder" type="text" /></label>
-        <label>Copyright link: <input name="copyrightLink" type="text" /></label>
-    </form>
+    <main>
+      <form name="tasl" style="margin-bottom: 2em">
+          <label>Title: <input name="title" type="text" /></label>
+          <label>Author: <input name="author" type="text" /></label>
+          <label>Source name: <input name="sourceName" type="text" /></label>
+          <label>Source link: <input name="sourceLink" type="text" /></label>
+          <label>Licence:
+          <select name="licence">
+            <!-- We allow an empty licence field for copyrighted items
+              See https://wellcome.slack.com/archives/C3N7J05TK/p1652082076791119?thread_ts=1651593359.762529&cid=C3N7J05TK
+              -->
+            <option></option>
+            <option selected>CC-BY</option>
+            <option>CC-BY-NC</option>
+            <option>CC-BY-NC-ND</option>
+            <option>CC-0</option>
+            <option>PDM</option>
+          </select>
+          </label>
+          <label>Copyright holder: <input name="copyrightHolder" type="text" /></label>
+          <label>Copyright link: <input name="copyrightLink" type="text" /></label>
+      </form>
 
-    <hr style="margin: 2em"/>
+      <hr style="margin: 2em"/>
 
-    Prismic value:<br/>
+      Prismic value:<br/>
 
-    <div id="copyme_content">
-      <span id="title"></span> |
-      <span id="author"></span> |
-      <span id="sourceName"></span> |
-      <span id="sourceLink"></span> |
-      <span id="licence">CC-BY</span> |
-      <span id="copyrightHolder"></span> |
-      <span id="copyrightLink"></span>
-    </div>
+      <div id="copyme_content">
+        <span id="title"></span> |
+        <span id="author"></span> |
+        <span id="sourceName"></span> |
+        <span id="sourceLink"></span> |
+        <span id="licence">CC-BY</span> |
+        <span id="copyrightHolder"></span> |
+        <span id="copyrightLink"></span>
+      </div>
 
-    <input id="copy_bin" type="text" style="display: none" />
-    <button id="copy">✂️ Copy</button>
+      <input id="copy_bin" type="text" style="display: none" />
+      <button id="copy">✂️ Copy</button>
 
-    <br/><br/>
+      <br/><br/>
 
-    Approximate preview:<br/>
-    <div id="preview_content">
-      &nbsp;
-    </div>
+      Approximate preview:<br/>
+      <div id="preview_content">
+        &nbsp;
+      </div>
 
-    <script>
-      const catalogueLicenses = {
-        pdm: {
-          id: 'pdm',
-          label: 'Public Domain Mark',
-          url: 'https://creativecommons.org/share-your-work/public-domain/pdm/',
-          type: 'License',
-        },
-        'cc-0': {
-          id: 'cc-0',
-          label: 'CC0 1.0 Universal',
-          url: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode',
-          type: 'License',
-        },
-        'cc-by': {
-          id: 'cc-by',
-          label: 'Attribution 4.0 International (CC BY 4.0)',
-          url: 'https://creativecommons.org/licenses/by/4.0/',
-          type: 'License',
-        },
-        'cc-by-nc': {
-          id: 'cc-by-nc',
-          label: 'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)',
-          url: 'https://creativecommons.org/licenses/by-nc/4.0/',
-          type: 'License',
-        },
-        'cc-by-nc-nd': {
-          id: 'cc-by-nc',
-          label:
-            'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)',
-          url: 'https://creativecommons.org/licenses/by-nc-nd/4.0/',
-          type: 'License',
-        },
-        'cc-by-nd': {
-          id: 'cc-by-nd',
-          label: 'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)',
-          url: 'https://creativecommons.org/licenses/by-nd/4.0/',
-          type: 'License',
-        },
-        'cc-by-sa': {
-          id: 'cc-by-sa',
-          label: 'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)',
-          url: 'https://creativecommons.org/licenses/by-sa/4.0/',
-          type: 'License',
-        },
-        'cc-by-nc-sa': {
-          id: 'cc-by-nc-sa',
-          label:
-            'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)',
-          url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
-          type: 'License',
-        },
-        ogl: {
-          id: 'ogl',
-          label: 'Open Government Licence',
-          url: 'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/',
-          type: 'License',
-        },
-        opl: {
-          id: 'opl',
-          label: 'Open Parliament Licence',
-          url: 'https://www.parliament.uk/site-information/copyright-parliament/open-parliament-licence',
-          type: 'License',
-        },
-        inc: {
-          id: 'inc',
-          label: 'In copyright',
-          url: 'http://rightsstatements.org/vocab/InC/1.0/',
-          type: 'License',
-        },
-      };
+      <script>
+        const catalogueLicenses = {
+          pdm: {
+            id: 'pdm',
+            label: 'Public Domain Mark',
+            url: 'https://creativecommons.org/share-your-work/public-domain/pdm/',
+            type: 'License',
+          },
+          'cc-0': {
+            id: 'cc-0',
+            label: 'CC0 1.0 Universal',
+            url: 'https://creativecommons.org/publicdomain/zero/1.0/legalcode',
+            type: 'License',
+          },
+          'cc-by': {
+            id: 'cc-by',
+            label: 'Attribution 4.0 International (CC BY 4.0)',
+            url: 'https://creativecommons.org/licenses/by/4.0/',
+            type: 'License',
+          },
+          'cc-by-nc': {
+            id: 'cc-by-nc',
+            label: 'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)',
+            url: 'https://creativecommons.org/licenses/by-nc/4.0/',
+            type: 'License',
+          },
+          'cc-by-nc-nd': {
+            id: 'cc-by-nc',
+            label:
+              'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)',
+            url: 'https://creativecommons.org/licenses/by-nc-nd/4.0/',
+            type: 'License',
+          },
+          'cc-by-nd': {
+            id: 'cc-by-nd',
+            label: 'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)',
+            url: 'https://creativecommons.org/licenses/by-nd/4.0/',
+            type: 'License',
+          },
+          'cc-by-sa': {
+            id: 'cc-by-sa',
+            label: 'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)',
+            url: 'https://creativecommons.org/licenses/by-sa/4.0/',
+            type: 'License',
+          },
+          'cc-by-nc-sa': {
+            id: 'cc-by-nc-sa',
+            label:
+              'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)',
+            url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+            type: 'License',
+          },
+          ogl: {
+            id: 'ogl',
+            label: 'Open Government Licence',
+            url: 'http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/',
+            type: 'License',
+          },
+          opl: {
+            id: 'opl',
+            label: 'Open Parliament Licence',
+            url: 'https://www.parliament.uk/site-information/copyright-parliament/open-parliament-licence',
+            type: 'License',
+          },
+          inc: {
+            id: 'inc',
+            label: 'In copyright',
+            url: 'http://rightsstatements.org/vocab/InC/1.0/',
+            type: 'License',
+          },
+        };
 
-      // This is an approximation of the TASL markup from the Tasl
-      // component, to give an idea of how this will be rendered.
-      function renderPreview() {
-        title = document.getElementsByName("title")[0].value;
-        author = document.getElementsByName("author")[0].value;
-        sourceName = document.getElementsByName("sourceName")[0].value;
-        sourceLink = document.getElementsByName("sourceLink")[0].value;
-        licence = document.getElementsByName("licence")[0].value;
-        copyrightHolder = document.getElementsByName("copyrightHolder")[0].value;
-        copyrightLink = document.getElementsByName("copyrightLink")[0].value;
+        // This is an approximation of the TASL markup from the Tasl
+        // component, to give an idea of how this will be rendered.
+        function renderPreview() {
+          title = document.getElementsByName("title")[0].value;
+          author = document.getElementsByName("author")[0].value;
+          sourceName = document.getElementsByName("sourceName")[0].value;
+          sourceLink = document.getElementsByName("sourceLink")[0].value;
+          licence = document.getElementsByName("licence")[0].value;
+          copyrightHolder = document.getElementsByName("copyrightHolder")[0].value;
+          copyrightLink = document.getElementsByName("copyrightLink")[0].value;
 
-        if (author !== "") {
-          byAuthor = `, ${author}`;
-        } else {
-          byAuthor = '';
-        }
+          if (author !== "") {
+            byAuthor = `, ${author}`;
+          } else {
+            byAuthor = '';
+          }
 
-        if (sourceLink !== "") {
-          titleHtml = `<a href="${sourceLink}">${title}${byAuthor}</a>. `;
-        } else {
-          titleHtml = `${title}${byAuthor}. `;
-        }
-
-        if (sourceName === "") {
-          sourceHtml = "";
-        } else {
           if (sourceLink !== "") {
-            sourceHtml = `Source: <a href="${sourceLink}">${sourceName}</a>. `
+            titleHtml = `<a href="${sourceLink}">${title}${byAuthor}</a>. `;
           } else {
-            sourceHtml = `Source: ${sourceName}. `
+            titleHtml = `${title}${byAuthor}. `;
           }
-        }
 
-        if (copyrightHolder === "") {
-          copyrightHtml = "";
-        } else {
-          if (copyrightLink !== "") {
-            copyrightHtml = `&copy; <a href="${copyrightLink}">${copyrightHolder}</a>. `;
+          if (sourceName === "") {
+            sourceHtml = "";
           } else {
-            copyrightHtml = `&copy ${copyrightHolder}. `;
+            if (sourceLink !== "") {
+              sourceHtml = `Source: <a href="${sourceLink}">${sourceName}</a>. `
+            } else {
+              sourceHtml = `Source: ${sourceName}. `
+            }
           }
-        }
 
-        if (licence !== "") {
-          licenseData = catalogueLicenses[licence.toLowerCase()];
-          if (!licenseData) {
+          if (copyrightHolder === "") {
+            copyrightHtml = "";
+          } else {
+            if (copyrightLink !== "") {
+              copyrightHtml = `&copy; <a href="${copyrightLink}">${copyrightHolder}</a>. `;
+            } else {
+              copyrightHtml = `&copy ${copyrightHolder}. `;
+            }
+          }
+
+          if (licence !== "") {
+            licenseData = catalogueLicenses[licence.toLowerCase()];
+            if (!licenseData) {
+              licenseHtml = "";
+            } else {
+              licenseHtml = `<a href="${licenseData.url}">${licenseData.label}</a>.`;
+            }
+          } else {
             licenseHtml = "";
-          } else {
-            licenseHtml = `<a href="${licenseData.url}">${licenseData.label}</a>.`;
           }
-        } else {
-          licenseHtml = "";
+
+          document.getElementById("preview_content").innerHTML = `${titleHtml}${sourceHtml}${copyrightHtml}${licenseHtml}`;
         }
 
-        document.getElementById("preview_content").innerHTML = `${titleHtml}${sourceHtml}${copyrightHtml}${licenseHtml}`;
-      }
+        var copy_bin = document.getElementById('copy_bin');
+        var content = document.getElementById('copyme_content');
 
-      var copy_bin = document.getElementById('copy_bin');
-      var content = document.getElementById('copyme_content');
+        renderPreview();
 
-      renderPreview();
-
-      [].slice.call(document.forms.tasl.elements).forEach(function(el) {
-        el.addEventListener('change', function(event) {
-          document.getElementById(event.currentTarget.name).innerHTML = event.currentTarget.value;
-          renderPreview();
+        [].slice.call(document.forms.tasl.elements).forEach(function(el) {
+          el.addEventListener('change', function(event) {
+            document.getElementById(event.currentTarget.name).innerHTML = event.currentTarget.value;
+            renderPreview();
+          })
+          el.addEventListener('keyup', function(event) {
+            document.getElementById(event.currentTarget.name).innerHTML = event.currentTarget.value;
+            renderPreview();
+          })
         })
-        el.addEventListener('keyup', function(event) {
-          document.getElementById(event.currentTarget.name).innerHTML = event.currentTarget.value;
-          renderPreview();
+        document.getElementById('copy').addEventListener('click', function() {
+          copy_bin.style.display = 'block'
+          content.innerText
+          copy_bin.value = content.innerText
+          copy_bin.select()
+          document.execCommand('copy')
+          copy_bin.style.display = 'none'
+          alert('Copied')
         })
-      })
-      document.getElementById('copy').addEventListener('click', function() {
-        copy_bin.style.display = 'block'
-        content.innerText
-        copy_bin.value = content.innerText
-        copy_bin.select()
-        document.execCommand('copy')
-        copy_bin.style.display = 'none'
-        alert('Copied')
-      })
-    </script>
+      </script>
+    </main>
   </body>
 </html>
