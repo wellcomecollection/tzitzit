@@ -30,6 +30,8 @@ This caption is more than just static text; it includes hyperlinks and the full 
 
 Because this syntax isn't especially intuitive, the tzitzit tool helps the Editorial team assemble these strings.
 
+![A screenshot of tzitzit. It's a simple web form with a couple of text fields, then below it a yellow-shaded box showing what to paste into Prismic, and a blue-shaded box showing how it will appear on the website.](screenshot.png)
+
 
 
 ## Deployment
