@@ -128,6 +128,18 @@
           },
         };
 
+        function populateBasedOnQueryParams() {
+          const params = new URLSearchParams(window.location.search);
+
+          const copiedFields = ['title', 'author', 'sourceName', 'sourceLink', 'licence', 'copyrightHolder', 'copyrightLink'];
+
+          for (const field of copiedFields) {
+            if (params.get(field) !== null) {
+              document.getElementsByName(field)[0].value = params.get(field);
+            }
+          }
+        }
+
         // This is an approximation of the TASL markup from the Tasl
         // component, to give an idea of how this will be rendered.
         function getPreviewText() {
@@ -228,6 +240,7 @@
         var copy_bin = document.getElementById('copy_bin');
         var content = document.getElementById('copyme_content');
 
+        populateBasedOnQueryParams();
         renderPreview();
 
         [].slice.call(document.forms.tasl.elements).forEach(function(el) {
