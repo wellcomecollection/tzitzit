@@ -138,6 +138,10 @@
               document.getElementsByName(field)[0].value = params.get(field);
             }
           }
+
+          for (const el of document.forms.tasl.elements) {
+            document.getElementById(el.name).innerHTML = el.value;
+          }
         }
 
         // This is an approximation of the TASL markup from the Tasl
